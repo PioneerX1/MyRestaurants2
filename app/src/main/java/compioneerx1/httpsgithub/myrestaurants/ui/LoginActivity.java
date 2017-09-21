@@ -1,5 +1,6 @@
 package compioneerx1.httpsgithub.myrestaurants.ui;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
@@ -33,11 +34,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private FirebaseAuth mAuth;   // for logging in
     private FirebaseAuth.AuthStateListener mAuthListener;  // for listening if authentication state has changed, navigates user
 
+    private ProgressDialog mAuthProgressDialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
+
+        createAuthProgressDialog();
 
         mAuth = FirebaseAuth.getInstance();
         mAuthListener = new FirebaseAuth.AuthStateListener() {
@@ -56,6 +61,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         mPasswordLoginButton.setOnClickListener(this);
         mRegisterTextView.setOnClickListener(this);
+    }
+
+
+    // method that creates progress dialog
+    private void createAuthProgressDialog() {
+        mAuthProgressDialog = new ProgressDialog(this);
+        mAuthProgressDialog.setTitle("Loading...");
+        mAuthProgressDialog.setMessage("Authenticating with Firebase...");
+        mAuthProgressDialog.setCancelable(false);
     }
 
     // methods relating to Auth Listener
@@ -101,12 +115,17 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             return;
         }
 
+        mAuthProgressDialog.show();  // show progress dialog
+
         // Firebase method that requires an OnCompleteListener to handle authentication attempt
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
+
+                        mAuthProgressDialog.dismiss();  // kill progress dialog
+
                         Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
                         if (!task.isSuccessful()) {
                             Log.w(TAG, "signInWithEmail", task.getException());
