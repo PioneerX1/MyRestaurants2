@@ -1,10 +1,21 @@
 package compioneerx1.httpsgithub.myrestaurants.ui;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -12,7 +23,15 @@ import compioneerx1.httpsgithub.myrestaurants.R;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
 
+    public static final String TAG = LoginActivity.class.getSimpleName();
+
+    @Bind(R.id.passwordLoginButton) Button mPasswordLoginButton;
+    @Bind(R.id.emailEditText) EditText mEmailEditText;
+    @Bind(R.id.passwordEditText) EditText mPasswordEditText;
     @Bind(R.id.registerTextView) TextView mRegisterTextView;
+
+    private FirebaseAuth mAuth;   // for logging in
+    private FirebaseAuth.AuthStateListener mAuthListener;  // for listening if authentication state has changed, navigates user
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,9 +39,42 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
 
+        mAuth = FirebaseAuth.getInstance();
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        };
+
+        mPasswordLoginButton.setOnClickListener(this);
         mRegisterTextView.setOnClickListener(this);
     }
 
+    // methods relating to Auth Listener
+    @Override
+    public void onStart() {
+        super.onStart();
+        mAuth.addAuthStateListener(mAuthListener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
+
+    // on click listener methods
     @Override
     public void onClick(View view) {
         if (view == mRegisterTextView) {
@@ -30,5 +82,38 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             startActivity(intent);
             finish();
         }
+        if (view == mPasswordLoginButton) {
+            loginWithPassword();
+        }
+    }
+
+    // method login that talks to Firebase
+    private void loginWithPassword() {
+        String email = mEmailEditText.getText().toString().trim();
+        String password = mPasswordEditText.getText().toString().trim();
+
+        if (email.equals("")) {
+            mEmailEditText.setError("Please enter your email");
+            return;
+        }
+        if (password.equals("")) {
+            mPasswordEditText.setError("Password cannot be blank");
+            return;
+        }
+
+        // Firebase method that requires an OnCompleteListener to handle authentication attempt
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                        if (!task.isSuccessful()) {
+                            Log.w(TAG, "signInWithEmail", task.getException());
+                            Toast.makeText(LoginActivity.this, "Authentication failed", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
     }
 }
