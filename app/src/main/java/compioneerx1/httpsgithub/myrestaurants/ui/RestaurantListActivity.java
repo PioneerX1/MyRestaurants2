@@ -97,6 +97,7 @@ public class RestaurantListActivity extends AppCompatActivity {
     }
 
     private void getRestaurants(String location) {
+
         final YelpService yelpService = new YelpService();
 
         yelpService.findRestaurants(location, new Callback() {
