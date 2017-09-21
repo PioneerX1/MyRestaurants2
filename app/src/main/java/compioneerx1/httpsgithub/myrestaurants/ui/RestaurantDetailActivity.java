@@ -3,6 +3,7 @@ package compioneerx1.httpsgithub.myrestaurants.ui;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import org.parceler.Parcels;
 
@@ -27,6 +28,8 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         mRestaurants = Parcels.unwrap(getIntent().getParcelableExtra("restaurants"));
+
+        Log.v("parcel: ", mRestaurants.get(0).getName() + "");
         int startingPosition = Integer.parseInt(getIntent().getStringExtra("position"));
 
         adapterViewPager = new RestaurantPagerAdapter(getSupportFragmentManager(), mRestaurants);

@@ -28,10 +28,10 @@ public class RestaurantListActivityTest {
         mRestaurantListView = (ListView) activity.findViewById(R.id.listView);
     }
 
-    @Test
-    public void restaurantListViewPopulates() {
-        assertNotNull(mRestaurantListView.getAdapter());
-        assertEquals(mRestaurantListView.getAdapter().getCount(), 16);
-    }
+//    @Test
+//    public void restaurantListViewPopulates() {
+//        assertNotNull(mRestaurantListView.getAdapter());
+//        assertEquals(mRestaurantListView.getAdapter().getCount(), 16);
+//    }
 
 }
