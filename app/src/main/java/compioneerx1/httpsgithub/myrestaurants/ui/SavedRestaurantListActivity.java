@@ -1,4 +1,4 @@
-package compioneerx1.httpsgithub.myrestaurants;
+package compioneerx1.httpsgithub.myrestaurants.ui;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,6 +13,8 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import compioneerx1.httpsgithub.myrestaurants.Constants;
+import compioneerx1.httpsgithub.myrestaurants.R;
 import compioneerx1.httpsgithub.myrestaurants.adapters.FirebaseRestaurantViewHolder;
 import compioneerx1.httpsgithub.myrestaurants.models.Restaurant;
 
@@ -41,7 +43,7 @@ public class SavedRestaurantListActivity extends AppCompatActivity {
 
     private void setUpFirebaseAdapter() {
         mFirebaseAdapter = new FirebaseRecyclerAdapter<Restaurant, FirebaseRestaurantViewHolder>
-                (Restaurant.class, R.layout.restaurant_list_item, FirebaseRestaurantViewHolder.class,
+                (Restaurant.class, R.layout.restaurant_list_item_drag, FirebaseRestaurantViewHolder.class,
                         mRestaurantReference) {
 
             @Override
