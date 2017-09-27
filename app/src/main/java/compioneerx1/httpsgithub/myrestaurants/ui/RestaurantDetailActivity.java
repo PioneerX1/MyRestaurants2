@@ -11,6 +11,7 @@ import java.util.ArrayList;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import compioneerx1.httpsgithub.myrestaurants.Constants;
 import compioneerx1.httpsgithub.myrestaurants.R;
 import compioneerx1.httpsgithub.myrestaurants.adapters.RestaurantPagerAdapter;
 import compioneerx1.httpsgithub.myrestaurants.models.Restaurant;
@@ -27,10 +28,9 @@ public class RestaurantDetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_restaurant_detail);
         ButterKnife.bind(this);
 
-        mRestaurants = Parcels.unwrap(getIntent().getParcelableExtra("restaurants"));
+        mRestaurants = Parcels.unwrap(getIntent().getParcelableExtra(Constants.EXTRA_KEY_RESTAURANTS));
 
-        Log.v("parcel: ", mRestaurants.get(0).getName() + "");
-        int startingPosition = getIntent().getIntExtra("position", 0);
+        int startingPosition = getIntent().getIntExtra(Constants.EXTRA_KEY_POSITION, 0);
 
         adapterViewPager = new RestaurantPagerAdapter(getSupportFragmentManager(), mRestaurants);
         mViewPager.setAdapter(adapterViewPager);

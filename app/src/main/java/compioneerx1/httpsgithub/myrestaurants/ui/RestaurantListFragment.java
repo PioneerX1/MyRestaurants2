@@ -1,6 +1,7 @@
 package compioneerx1.httpsgithub.myrestaurants.ui;
 
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -26,6 +27,7 @@ import compioneerx1.httpsgithub.myrestaurants.R;
 import compioneerx1.httpsgithub.myrestaurants.adapters.RestaurantListAdapter;
 import compioneerx1.httpsgithub.myrestaurants.models.Restaurant;
 import compioneerx1.httpsgithub.myrestaurants.services.YelpService;
+import compioneerx1.httpsgithub.myrestaurants.util.OnRestaurantSelectedListener;
 import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
@@ -42,6 +44,7 @@ public class RestaurantListFragment extends Fragment {
     private SharedPreferences mSharedPreferences;
     private SharedPreferences.Editor mEditor;
     private String mRecentAddress;
+    private OnRestaurantSelectedListener mOnRestaurantSelectedListener;
 
 
     public RestaurantListFragment() {
@@ -125,7 +128,7 @@ public class RestaurantListFragment extends Fragment {
 
                     @Override
                     public void run() {
-                        mAdapter = new RestaurantListAdapter(getActivity(), mRestaurants);
+                        mAdapter = new RestaurantListAdapter(getActivity(), mRestaurants, mOnRestaurantSelectedListener);
                         // Line above states `getActivity()` instead of previous
                         // 'getApplicationContext()' because fragments do not have own context,
                         // must instead inherit it from corresponding activity.
@@ -143,6 +146,19 @@ public class RestaurantListFragment extends Fragment {
                 });
             }
         });
+    }
+
+    // capture an instance of OnRestaurantSelectedListener interface and
+    // cast it into the context of the activities we need to communicate with,
+    // this enables us to pass the listener interface into the RestaurantListAdapter
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            mOnRestaurantSelectedListener = (OnRestaurantSelectedListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + e.getMessage());
+        }
     }
 
 }
